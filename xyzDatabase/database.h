@@ -12,53 +12,57 @@ class Database {
 public:
 	Database()
 	{
-		//Create sentinal nodes for file list.
-		pFirst = new LineRecord;
-		if (!pFirst) throw "Error. Out of memory.";
-		pLast = new LineRecord;
-		if (!pLast) throw "Error. Out of memory.";
+		////Create sentinal nodes for file list.
+		//pFirst = new LineRecord;
+		//if (!pFirst) throw (string)"Error. Out of memory.";
+		//pLast = new LineRecord;
+		//if (!pLast) throw (string)"Error. Out of memory.";
 
-		pFirst->pPrev = NULL;
-		pFirst->pNext = pLast;
+		//pFirst->pPrev = NULL;
+		//pFirst->pNext = pLast;
 
-		pLast->pPrev = pFirst;
-		pLast->pNext = NULL;
+		//pLast->pPrev = pFirst;
+		//pLast->pNext = NULL;
 	}
 
 	virtual ~Database()
 	{
-		delete pFirst;
-		delete pLast;
+		//delete pFirst;
+		//delete pLast;
 	}
 
 	string addFile(string & fileName)
 	{
-		LineRecord * pCurrent;
-		pCurrent = new LineRecord;
-		pCurrent = pFirst->pNext;
+		LineRecord * pNewNode;
+		LineRecord * pTemp;
+		pNewNode = new LineRecord;
+		if (pNewNode == NULL) throw (string)"Error, out of memory!";
+		pNewNode->pPrev = NULL;
+		
 		int counter = 0;
 
 		ifstream fin;
 		fin.open(fileName);
-		if (fin.fail()) throw "File was not found.  Please try again";  //GET THIS WORKING
+		if (fin.fail()) throw (string)"File was not found.  Please try again";  //GET THIS WORKING
 		while (!fin.eof())
 		{
-			LineRecord * pCurrent;
-			pCurrent = new LineRecord;
-
 			counter++;
-			pCurrent->lineNumber = counter;
-			pCurrent->filename = fileName;
-			getline(fin, pCurrent->line);
-			//pCurrent = pCurrent->pNext;
+			pNewNode->filename = fileName;
+			pNewNode->lineNumber = counter;
+			getline(fin, pNewNode->line);
+			pTemp = new LineRecord;
+			if (pTemp == NULL) throw (string)"Error, out of memory!";
+			pNewNode->pNext = pTemp;
+			pNewNode = pTemp;
 		}
 		fin.close();
-		return intToString(counter) + " lines from " + fileName + " has been added.";
+		return intToString(counter) + " lines from " + fileName + " have been added.";
 	}
 
 
+
 private:
-	LineRecord * pFirst;
-	LineRecord * pLast;
+	//LineRecord * pFirst;
+	//LineRecord * pLast;
 
 };
