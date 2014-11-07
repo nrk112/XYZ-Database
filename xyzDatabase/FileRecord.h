@@ -32,7 +32,7 @@ public:
 	{
 		LineRecord * pNewLineRecord;
 		pNewLineRecord = new LineRecord;
-		if (pNewLineRecord == NULL) throw (string)"Error: Out of memory.";
+		if (!pNewLineRecord) throw (string)"Error: Out of memory.";
 
 		pLast->pPrev->pNext = pNewLineRecord;
 		pNewLineRecord->pNext = pLast;
@@ -43,7 +43,7 @@ public:
 		pNewLineRecord->fileName = fileName;
 		pNewLineRecord->line = line;
 		pNewLineRecord->lineNumber = counter;
-
+		wordsInFile += pNewLineRecord->tokenizeLine();
 		return;
 	}
 
@@ -51,12 +51,12 @@ public:
 	{
 		string result;
 		LineRecord * pCurrent = pFirst->pNext;
-		do
+		while (pCurrent->pNext != NULL)
 		{
 			result += intToString(pCurrent->lineNumber) + ". ";
 			result += pCurrent->line + "\n";
 			pCurrent = pCurrent->pNext;
-		}while (pCurrent->pNext != NULL);
+		}
 
 		return result;
 	}
@@ -69,4 +69,5 @@ private:
 	FileRecord * pNext;
 	string fileName;
 	int counter = 0;
+	int wordsInFile = 0;
 };

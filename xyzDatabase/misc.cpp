@@ -62,7 +62,7 @@ vector<TomToken> tokenizeAlt2(string line)
 {
 	vector<TomToken> result;
 	TomToken ttoken;
-	string delimeters = ";() \t\n\r\f\b/*+-{}.=,!\"\'%&:<>:[]|";
+	string delimeters = ";() \t\n\r\f\b/*+-{}.=,!\"%&:<>:[]|";   //REMOVED ' AS DELIMITER FOR USE WITH PLURAL WORDS. 
 	unsigned int start=0;
 	unsigned int end=0;
 	while(end<line.length())

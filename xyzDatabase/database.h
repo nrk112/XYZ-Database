@@ -24,6 +24,7 @@ public:
 	}
 
 	virtual ~Database(){
+
 	}
 
 	string addFile(string & fileName)
@@ -32,7 +33,7 @@ public:
 
 		FileRecord * pNewFileRecord;
 		pNewFileRecord = new FileRecord;
-		if (pNewFileRecord == NULL) throw (string)"Error: Out of memory.";
+		if (!pNewFileRecord) throw (string)"Error: Out of memory.";
 
 		pNewFileRecord->fileName = fileName;
 
@@ -43,7 +44,7 @@ public:
 
 		addLineRecords(pNewFileRecord);
 
-		return intToString(pNewFileRecord->counter) + " lines from " + fileName + " were added to the database.";
+		return intToString(pNewFileRecord->counter) + " lines consisting of " + intToString(pNewFileRecord->wordsInFile) + " words in " + fileName + " have been added to the database.";
 	}
 
 
@@ -67,12 +68,12 @@ public:
 	{
 		string result;
 		FileRecord * pCurrent = pFirst->pNext;
-		do
+		while (pCurrent->pNext != NULL)
 		{
 			result += "\n\n" + pCurrent->fileName + "\n";
 			result += pCurrent->getLines();
 			pCurrent = pCurrent->pNext;
-		} while (pCurrent->pNext != NULL);
+		}
 		return result;
 	}
 
