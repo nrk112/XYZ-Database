@@ -2,7 +2,7 @@
 
 #include <string>
 #include <fstream>
-#include "LineRecord.h"
+#include "FileRecord.h"
 #include "wurd.h"
 #include "misc.h"
 
@@ -10,59 +10,73 @@ using namespace std;
 
 class Database {
 public:
-	Database()
-	{
-		////Create sentinal nodes for file list.
-		//pFirst = new LineRecord;
-		//if (!pFirst) throw (string)"Error. Out of memory.";
-		//pLast = new LineRecord;
-		//if (!pLast) throw (string)"Error. Out of memory.";
+	Database(){
+		pFirst = new FileRecord;
+		if (!pFirst) throw (string)"Error: Out of memory.";
+		pLast = new FileRecord;
+		if (!pLast) throw (string)"Error: Out of memory.";
 
-		//pFirst->pPrev = NULL;
-		//pFirst->pNext = pLast;
+		pFirst->pPrev = NULL;
+		pFirst->pNext = pLast;
 
-		//pLast->pPrev = pFirst;
-		//pLast->pNext = NULL;
+		pLast->pPrev = pFirst;
+		pLast->pNext = NULL;
 	}
 
-	virtual ~Database()
-	{
-		//delete pFirst;
-		//delete pLast;
+	virtual ~Database(){
 	}
 
 	string addFile(string & fileName)
 	{
-		LineRecord * pNewNode;
-		LineRecord * pTemp;
-		pNewNode = new LineRecord;
-		if (pNewNode == NULL) throw (string)"Error, out of memory!";
-		pNewNode->pPrev = NULL;
-		
-		int counter = 0;
+		string result;
 
-		ifstream fin;
-		fin.open(fileName);
-		if (fin.fail()) throw (string)"File was not found.  Please try again";  //GET THIS WORKING
-		while (!fin.eof())
-		{
-			counter++;
-			pNewNode->filename = fileName;
-			pNewNode->lineNumber = counter;
-			getline(fin, pNewNode->line);
-			pTemp = new LineRecord;
-			if (pTemp == NULL) throw (string)"Error, out of memory!";
-			pNewNode->pNext = pTemp;
-			pNewNode = pTemp;
-		}
-		fin.close();
-		return intToString(counter) + " lines from " + fileName + " have been added.";
+		FileRecord * pNewFileRecord;
+		pNewFileRecord = new FileRecord;
+		if (pNewFileRecord == NULL) throw (string)"Error: Out of memory.";
+
+		pNewFileRecord->fileName = fileName;
+
+		pLast->pPrev->pNext = pNewFileRecord;
+		pNewFileRecord->pNext = pLast;
+		pNewFileRecord->pPrev = pLast->pPrev;
+		pLast->pPrev = pNewFileRecord;
+
+		addLineRecords(pNewFileRecord);
+
+		return intToString(pNewFileRecord->counter) + " lines from " + fileName + " were added to the database.";
 	}
 
 
+	void addLineRecords(FileRecord *& pCurrentFileRecord)
+	{
+		string tempLine;
+		ifstream fin;
+		fin.open(pCurrentFileRecord->fileName);
+		if (fin.fail()) throw (string)"File was not found.  Please try again";
+
+		while (!fin.eof())
+		{
+			getline(fin, tempLine);
+			pCurrentFileRecord->addLineRecord(tempLine);
+		}
+		fin.close();
+		return;
+	}
+
+	string display()
+	{
+		string result;
+		FileRecord * pCurrent = pFirst->pNext;
+		do
+		{
+			result += "\n\n" + pCurrent->fileName + "\n";
+			result += pCurrent->getLines();
+			pCurrent = pCurrent->pNext;
+		} while (pCurrent->pNext != NULL);
+		return result;
+	}
 
 private:
-	//LineRecord * pFirst;
-	//LineRecord * pLast;
-
+	FileRecord * pFirst;
+	FileRecord * pLast;
 };

@@ -7,11 +7,12 @@ using namespace std;
 class LineRecord {
 public:
 	friend class Database;
+	friend class FileRecord;
 
 private:
 	LineRecord * pPrev;
 	LineRecord * pNext;
 	string line;
-	string filename;
+	string fileName;
 	int lineNumber;
 };

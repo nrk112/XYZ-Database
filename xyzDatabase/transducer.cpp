@@ -29,7 +29,7 @@ string Transducer::transduce(string command)
 	}
 	else if ((token[0] == "DISPLAY") || (token[0] == "D"))
 	{
-		result = "Display is not yet implemented.";
+		result = database.display();
 	}
 	else if ((token[0] == "QUERY") || (token[0] == "QY"))
 	{

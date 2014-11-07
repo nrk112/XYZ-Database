@@ -41,6 +41,9 @@
     <ClInclude Include="LineRecord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FileRecord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="FIRE_AND_ICE.TXT">
@@ -50,6 +53,9 @@
       <Filter>Source Files</Filter>
     </Text>
     <Text Include="NOTHING_GOLD_CAN_STAY.TXT">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="run.txt">
       <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>

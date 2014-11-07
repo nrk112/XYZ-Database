@@ -159,8 +159,15 @@ void advancedCommandLineInterface(Transducer & t)
 
 int main()
 {
-	Transducer transducer;
-	advancedCommandLineInterface(transducer);
+	try
+	{
+		Transducer transducer;
+		advancedCommandLineInterface(transducer);
+	}
+	catch (string e)
+	{
+		cout << e << endl;
+	}
 	return 0;
 }
 
