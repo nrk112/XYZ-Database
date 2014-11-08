@@ -322,3 +322,13 @@ string stripLeadingBlanks(string s)
 	}	
 	return s;
 }
+
+
+string lowerCase(string& strToConvert)
+{
+	for (unsigned int i = 0; i<strToConvert.length(); i++)
+	{
+		strToConvert[i] = tolower(strToConvert[i]);
+	}
+	return strToConvert;
+}

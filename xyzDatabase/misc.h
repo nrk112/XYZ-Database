@@ -49,3 +49,5 @@ int dollarStringToInt(string s);
 string randString(int numOfChars);
 string randNumberString(int numOfChars);
 int randInt(int lower, int upper);
+
+string lowerCase(string& strToConvert);

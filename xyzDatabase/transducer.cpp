@@ -25,7 +25,9 @@ string Transducer::transduce(string command)
 	}
 	else if ((token[0] == "FIND_WORD") || (token[0] == "F"))
 	{
-		result = "Not yet implemented.";
+		string key;
+		key = lowerCase(token[1]);
+		result = database.searchForWurd(key);
 	}
 	else if ((token[0] == "DISPLAY") || (token[0] == "D"))
 	{
@@ -37,7 +39,8 @@ string Transducer::transduce(string command)
 	}
 	else if ((token[0] == "CLEAR") || (token[0] == "C"))
 	{
-		result = "Not yet implemented.";
+		database.clearAll();
+		result = "All entries have been cleared.";
 	}
 	else
 	{

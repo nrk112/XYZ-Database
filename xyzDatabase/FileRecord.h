@@ -28,7 +28,7 @@ public:
 	{
 	}
 
-	void addLineRecord(string line)
+	LineRecord * addLineRecord(string line)
 	{
 		LineRecord * pNewLineRecord;
 		pNewLineRecord = new LineRecord;
@@ -43,8 +43,8 @@ public:
 		pNewLineRecord->fileName = fileName;
 		pNewLineRecord->line = line;
 		pNewLineRecord->lineNumber = counter;
-		wordsInFile += pNewLineRecord->tokenizeLine();
-		return;
+		//wordsInFile += pNewLineRecord->tokenizeLine();
+		return pNewLineRecord;
 	}
 
 	string getLines()
