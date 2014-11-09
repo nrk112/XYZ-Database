@@ -6,8 +6,16 @@
 #include "LineRecord.h"
 #include "wurd.h"
 #include "misc.h"
+#include <vector>
 
 using namespace std;
+
+struct vectWurds
+{
+	string line = "";
+	string fileName = "";
+	string lineNumber = "";
+};
 
 class Database {
 public:
@@ -25,7 +33,10 @@ public:
 	}
 
 	virtual ~Database(){
-		clearAll(true);
+		clearAll();
+		removeAllLLNode();
+		delete pFirst;
+		delete pLast;
 	}
 
 	string addFile(string & fileName)
@@ -61,26 +72,41 @@ public:
 		return result;
 	}
 
+	//string searchForWurd(string & key)
+	//{
+	//	string result;
+	//	Wurd * pTempWurd = pRoot;
+	//	pTempWurd = find(key, pTempWurd);
+	//	result += pTempWurd->pLineRecord->line + "\n";
+	//	result += pTempWurd->pLineRecord->fileName + " [";
+	//	result += intToString(pTempWurd->pLineRecord->lineNumber) + "] \n";
+	//	return result;
+	//}
+
 	string searchForWurd(string key)
 	{
-		//while (pTempWurd->pLeft != NULL) && pTempWurd->pRight != NULL) run find again!
 		string result;
-		Wurd * pTempWurd = find(key, pRoot);
-		result = pTempWurd->pLineRecord->line + "\n";
-		result += pTempWurd->pLineRecord->fileName + " [";
-		result += intToString(pTempWurd->pLineRecord->lineNumber) + "]";
+		vector<vectWurds> vWurds;
+		//Wurd * pTempWurd = find(key, pRoot, vWurds);
+		find(key, pRoot, vWurds);
+
+		if (vWurds.size() == 0) return "There are no matches.";
+
+		vectWurds temp;
+		vWurds.push_back(temp);
+		for (unsigned int i = 0; i < vWurds.size() - 1; i++)
+		{
+			if ((vWurds[i].fileName == vWurds[i + 1].fileName) && (vWurds[i].lineNumber == vWurds[i + 1].lineNumber)) continue;
+			result += vWurds[i].line + "\n";
+			result += vWurds[i].fileName + " [";
+			result += vWurds[i].lineNumber + "]\n\n";
+		}
 		return result;
 	}
 
-	void clearAll(bool ownedByList=false)
-	{
-		while (!isEmpty()) clearAllLeafNodes(pRoot);
-	}
+	void clearAll()	{while (!isEmpty()) clearAllLeafNodes(pRoot);}
 
-	bool isEmpty()
-	{
-		return pRoot == NULL;
-	}
+	bool isEmpty()	{return pRoot == NULL;}
 
 private:
 	Wurd * pRoot = NULL;
@@ -92,7 +118,7 @@ private:
 		if (pCurrentRoot == NULL) return;
 		if ((pCurrentRoot->pLeft == NULL) && (pCurrentRoot->pRight == NULL))
 		{
-			removeNode(pCurrentRoot);
+			removeBSTNode(pCurrentRoot);
 			return;
 		}
 		clearAllLeafNodes(pCurrentRoot->pLeft);
@@ -117,24 +143,33 @@ private:
 		return;
 	}
 
-	Wurd *& find(string key, Wurd *& pCurrentRoot)
+	void find(string key, Wurd *& pCurrentRoot, vector<vectWurds> & vWurds)
 	{
-		if (pCurrentRoot == NULL) return pCurrentRoot;
-		if (pCurrentRoot->wurd == key) return pCurrentRoot;
+
+		if (pCurrentRoot == NULL) return;
+		if (pCurrentRoot->wurd == key)
+		{
+			vectWurds temp;
+			temp.line = pCurrentRoot->pLineRecord->line;
+			temp.fileName = pCurrentRoot->pLineRecord->fileName;
+			temp.lineNumber = intToString(pCurrentRoot->pLineRecord->lineNumber);
+			vWurds.push_back(temp);
+			if ((pCurrentRoot->pLeft == NULL) && (pCurrentRoot->pRight == NULL)) return;
+		}
 		if (key < pCurrentRoot->wurd)
 		{
-			return find(key, pCurrentRoot->pLeft);
+			return find(key, pCurrentRoot->pLeft, vWurds);
 		}
 		else
 		{
-			return find(key, pCurrentRoot->pRight);
+			return find(key, pCurrentRoot->pRight, vWurds);
 		}
 	}
 
 	int tokenizeAndSubmitLine(LineRecord *& lR)
 	{
 		vector<TomToken> token = tokenizeAlt2(lR->line);
-		int i = 0;
+		unsigned int i = 0;
 		for (i = 0; i < token.size(); i++)
 		{
 			Wurd * pNewWurd;
@@ -144,34 +179,9 @@ private:
 			pNewWurd->pLeft = NULL;
 			pNewWurd->pRight = NULL;
 			pNewWurd->pLineRecord = lR;						//Include pointer to original line of word
-			addNode(pNewWurd, pRoot);					//Add words to BST
+			addNode(pNewWurd, pRoot);						//Add words to BST
 		}
 		return i + 1;
-	}
-
-	bool removeNode(Wurd * & pRemove)
-	{
-		if ((pRemove->pLeft == NULL) && (pRemove->pRight == NULL))
-		{
-			delete pRemove;
-			pRemove = NULL;
-		}
-		else if ((pRemove->pLeft != NULL) && (pRemove->pRight == NULL))
-		{
-			Wurd * pTemp = pRemove;
-			pRemove = pRemove->pLeft;
-			delete pTemp;
-		}
-		else if ((pRemove->pLeft == NULL) && (pRemove->pRight != NULL))
-		{
-			Wurd * pTemp = pRemove;
-			pRemove = pRemove->pRight;
-			delete pTemp;
-		}
-		else //if ((pRemove->pLeft != NULL) && (pRemove->pRight != NULL))
-		{
-		}
-		return true;
 	}
 
 	void addNode(Wurd * pNewWurd, Wurd *& pointerToCurrentRoot)
@@ -192,4 +202,39 @@ private:
 		return;
 	}
 
+	void removeBSTNode(Wurd * & pRemove)
+	{
+		if ((pRemove->pLeft == NULL) && (pRemove->pRight == NULL))
+		{
+			delete pRemove;
+			pRemove = NULL;
+		}
+		else if ((pRemove->pLeft != NULL) && (pRemove->pRight == NULL))
+		{
+			Wurd * pTemp = pRemove;
+			pRemove = pRemove->pLeft;
+			delete pTemp;
+		}
+		else if ((pRemove->pLeft == NULL) && (pRemove->pRight != NULL))
+		{
+			Wurd * pTemp = pRemove;
+			pRemove = pRemove->pRight;
+			delete pTemp;
+		}
+		return;
+	}
+
+	void removeAllLLNode()
+	{
+		FileRecord * pCurrent = pFirst->pNext;
+		FileRecord * pRemove = NULL;
+		while (pCurrent->pNext != NULL)
+		{
+			pCurrent = pCurrent->pNext;
+			pRemove = pCurrent->pPrev;
+			delete pRemove;
+		}
+		pFirst->pNext = pLast;
+		pLast->pPrev = pFirst;
+	}
 };

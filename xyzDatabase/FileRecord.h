@@ -26,6 +26,9 @@ public:
 
 	virtual ~FileRecord()
 	{
+		removeAllLLNode();
+		delete pFirst;
+		delete pLast;
 	}
 
 	LineRecord * addLineRecord(string line)
@@ -70,4 +73,18 @@ private:
 	string fileName;
 	int counter = 0;
 	int wordsInFile = 0;
+
+	void removeAllLLNode()
+	{
+		LineRecord * pCurrent = pFirst->pNext;
+		LineRecord * pRemove = NULL;
+		while (pCurrent->pNext != NULL)
+		{
+			pCurrent = pCurrent->pNext;
+			pRemove = pCurrent->pPrev;
+			delete pRemove;
+		}
+		pFirst->pNext = pLast;
+		pLast->pPrev = pFirst;
+	}
 };
