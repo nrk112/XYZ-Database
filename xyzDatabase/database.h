@@ -30,13 +30,15 @@ public:
 
 		pLast->pPrev = pFirst;
 		pLast->pNext = NULL;
+
+		loadDatabase();
 	}
 
 	virtual ~Database(){
+		saveDatabase();
 		clearAll();
-		removeAllLLNode();
-		delete pFirst;
-		delete pLast;
+		zap(pFirst);			//Clear sentinal nodes.
+		zap(pLast);
 	}
 
 	string addFile(string & fileName)
@@ -72,24 +74,13 @@ public:
 		return result;
 	}
 
-	//string searchForWurd(string & key)
-	//{
-	//	string result;
-	//	Wurd * pTempWurd = pRoot;
-	//	pTempWurd = find(key, pTempWurd);
-	//	result += pTempWurd->pLineRecord->line + "\n";
-	//	result += pTempWurd->pLineRecord->fileName + " [";
-	//	result += intToString(pTempWurd->pLineRecord->lineNumber) + "] \n";
-	//	return result;
-	//}
-
 	string searchForWurd(string key)
 	{
 		string result;
 		vector<vectWurds> vWurds;
-		//Wurd * pTempWurd = find(key, pRoot, vWurds);
 		find(key, pRoot, vWurds);
 
+		if (pRoot == NULL) return "The database is empty";
 		if (vWurds.size() == 0) return "There are no matches.";
 
 		vectWurds temp;
@@ -104,7 +95,11 @@ public:
 		return result;
 	}
 
-	void clearAll()	{while (!isEmpty()) clearAllLeafNodes(pRoot);}
+	void clearAll()	
+	{
+		while (!isEmpty()) clearAllLeafNodes(pRoot);	//Clear BST
+		removeAllLLNode();								//Clear LL Nodes
+	}
 
 	bool isEmpty()	{return pRoot == NULL;}
 
@@ -206,8 +201,7 @@ private:
 	{
 		if ((pRemove->pLeft == NULL) && (pRemove->pRight == NULL))
 		{
-			delete pRemove;
-			pRemove = NULL;
+			zap(pRemove);
 		}
 		else if ((pRemove->pLeft != NULL) && (pRemove->pRight == NULL))
 		{
@@ -232,9 +226,49 @@ private:
 		{
 			pCurrent = pCurrent->pNext;
 			pRemove = pCurrent->pPrev;
-			delete pRemove;
+			zap(pRemove);
 		}
 		pFirst->pNext = pLast;
 		pLast->pPrev = pFirst;
+	}
+
+	void saveDatabase()
+	{
+		ofstream fout;
+		fout.open("database", ofstream::out);
+		if (fout.fail()) throw (string)"Unable to save database.  Please check your permissions or disk space.";
+
+		FileRecord * pCurrent = pFirst->pNext;
+		while (pCurrent->pNext != NULL)
+		{
+			fout << pCurrent->fileName << endl;
+			pCurrent = pCurrent->pNext;
+		}
+		fout.close();
+	}
+
+	void loadDatabase()
+	{
+		string tempFileName;
+		ifstream fin;
+		fin.open("database");
+		if (fin.fail()) return;
+
+		while (!fin.eof())
+		{
+			getline(fin, tempFileName);
+			if (tempFileName == "") break;
+			addFile(tempFileName);
+		}
+		fin.close();
+		return;
+	}
+
+	template <class T>
+	inline void zap(T & remove)
+	{
+		_ASSERT(remove != NULL);
+		delete remove;
+		remove = NULL;
 	}
 };

@@ -27,8 +27,8 @@ public:
 	virtual ~FileRecord()
 	{
 		removeAllLLNode();
-		delete pFirst;
-		delete pLast;
+		zap(pFirst);
+		zap(pLast);
 	}
 
 	LineRecord * addLineRecord(string line)
@@ -82,9 +82,17 @@ private:
 		{
 			pCurrent = pCurrent->pNext;
 			pRemove = pCurrent->pPrev;
-			delete pRemove;
+			zap(pRemove);
 		}
 		pFirst->pNext = pLast;
 		pLast->pPrev = pFirst;
+	}
+
+	template <class T>
+	inline void zap(T & remove)
+	{
+		_ASSERT(remove != NULL);
+		delete remove;
+		remove = NULL;
 	}
 };

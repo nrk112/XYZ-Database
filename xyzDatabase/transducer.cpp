@@ -42,6 +42,10 @@ string Transducer::transduce(string command)
 		database.clearAll();
 		result = "All entries have been cleared.";
 	}
+	else if ((token[0] == "QUIT") || (token[0] == "Q"))
+	{
+		result = "Goodbye.";
+	}
 	else
 	{
 		result = "Unrecognized Command, Please try again!";
